@@ -5,16 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Escape the Maze</title>
   <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- ⚡ Preload основных картинок игры -->
+  <link rel="preload" href="https://i.ibb.co/tp4n66N4/hero-png.png" as="image">
+  <link rel="preload" href="https://i.ibb.co/nNWShMyS/food2-png.png" as="image">
+  <link rel="preload" href="https://i.ibb.co/C3CcTYFP/food1-png.png" as="image">
+  <link rel="preload" href="https://i.ibb.co/3JCnKQ2/Chat-GPT-Image-20-2025-15-59-48.png" as="image">
+
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: 'Merriweather', serif;
-      /* ✅ ИСПРАВЛЕНО: убраны пробелы в URL */
       background-image: url('https://i.ibb.co/VpWTTmSB/Chat-GPT-Image-13-2025-23-06-57-1.png');
       background-size: cover;
       background-position: center;
@@ -27,18 +29,11 @@
       min-height: 100vh;
     }
 
-    h1 {
-      font-size: 1.8rem;
-      margin: 10px 0 6px;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
+    h1 { font-size: 1.8rem; margin: 10px 0 6px; }
 
     .top-bar {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 8px;
-      flex-wrap: wrap;
-      justify-content: center;
+      display: flex; gap: 10px; margin-bottom: 8px;
+      flex-wrap: wrap; justify-content: center;
     }
 
     .ui-panel {
@@ -55,184 +50,96 @@
       gap: 6px;
     }
 
-    #keys-display {
-      display: flex;
-      gap: 3px;
-    }
+    #keys-display { display: flex; gap: 3px; }
 
     .key-icon {
-      width: 20px;
-      height: 20px;
-      border-radius: 4px;
+      width: 20px; height: 20px;
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
       opacity: 0.3;
     }
-    .key-icon.collected {
-      opacity: 1;
-    }
+    .key-icon.collected { opacity: 1; }
 
-    #key-0,
-    #key-1,
-    #key-2 {
+    #key-0, #key-1, #key-2 {
       background-image: url('https://i.ibb.co/C3CcTYFP/food1-png.png');
     }
-
-    #key-3,
-    #key-4,
-    #key-5 {
+    #key-3, #key-4, #key-5 {
       background-image: url('https://i.ibb.co/nNWShMyS/food2-png.png');
     }
 
     #canvas-container {
-      position: relative;
       width: 100%;
       max-width: 500px;
-      aspect-ratio: 1 / 1;
+      aspect-ratio: 1/1;
       margin: 8px 0;
+      flex: 0 0 auto; /* фиксированная ширина лабиринта */
     }
 
-    canvas {
-      background: #ffffff;
-      border-radius: 6px;
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
+    canvas { background: #fff; border-radius: 6px; width: 100%; height: 100%; }
 
+    /* 🔹 Лабиринт слева, кнопки справа */
     .game-area {
       display: flex;
-      gap: 12px;
-      width: 100%;
-      max-width: 600px;
+      flex-direction: row;
+      justify-content: center;
       align-items: center;
+      gap: 16px;
+      width: 100%;
+      max-width: 800px;
+      margin-top: 8px;
     }
 
     .controls {
       display: flex;
       flex-direction: column;
+      align-items: center; /* крест по центру */
       gap: 6px;
+      flex: 0 0 auto;      /* не растягивать */
     }
 
     .arrow-btn {
-      width: 48px;
-      height: 48px;
+      width: 48px; height: 48px; background: transparent !important;
+      border: none; cursor: pointer; display: flex;
+      align-items: center; justify-content: center;
       padding: 0;
-      margin: 0;
-      background: transparent !important;
-      border: none !important;
-      outline: none !important;
-      box-shadow: none !important;
-      border-radius: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
     }
 
-    .arrow-btn:hover {
-      background: #089ab8;
-      transform: scale(1.05);
+    .arrow-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
     }
-
-    .arrow-btn:active {
-      transform: scale(0.97);
-    }
-
-    #up { width: 48px; align-self: center; }
-    #left, #right { width: 48px; }
-    #down { width: 48px; align-self: center; }
 
     .btn {
-      background: #10b981;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      padding: 8px 14px;
-      font-size: 0.9rem;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.2s;
+      background: #10b981; color: #fff; border-radius: 6px;
+      padding: 8px 14px; font-weight: bold; cursor: pointer;
       box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-    }
-
-    .btn:hover {
-      background: #0da473;
-      transform: translateY(-1px);
-    }
-
-    button,
-    .arrow-btn,
-    .btn {
-      outline: none;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    button:focus,
-    button:focus-visible,
-    .arrow-btn:focus,
-    .arrow-btn:focus-visible,
-    .btn:focus,
-    .btn:focus-visible {
-      outline: none;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+      border: none;
     }
 
     .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.7);
-      z-index: 100;
-      align-items: center;
-      justify-content: center;
+      display: none; position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%; background: rgba(0,0,0,0.7);
+      z-index: 100; align-items: center; justify-content: center;
     }
 
     .modal-content {
-      background: #aef5b5;
-      border-radius: 14px;
-      padding: 24px;
-      text-align: center;
-      max-width: 90%;
-      width: 360px;
+      background: #aef5b5; padding: 24px; border-radius: 14px;
+      max-width: 90%; width: 360px; text-align: center;
       box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     }
 
-    .modal h2 {
-      font-size: 1.8rem;
-      margin-bottom: 12px;
-      color: #0d3a23;
-    }
-
-    .modal p {
-      font-size: 1.1rem;
-      margin: 8px 0;
-    }
-
-    @media (max-width: 500px) {
+    /* На очень узких экранах — кнопки под лабиринтом */
+    @media (max-width: 600px) {
       .game-area {
         flex-direction: column;
-        align-items: center;
       }
-      .controls {
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        width: 100%;
-      }
-      .arrow-btn {
-        width: 44px;
-        height: 44px;
-        font-size: 1.2rem;
-      }
-      #up, #down { width: 44px; }
     }
   </style>
 </head>
+
 <body>
   <h1>Escape the Maze</h1>
 
@@ -257,49 +164,46 @@
     <div id="canvas-container">
       <canvas id="mazeCanvas"></canvas>
     </div>
+
+    <!-- Крест управления СПРАВА -->
     <div class="controls">
+      <!-- UP -->
       <button id="up" class="arrow-btn">
-        <img src="https://i.ibb.co/zVJmCGN7/Chat-GPT-Image-20-2025-15-42-39.png"
-             alt="up"
-             style="width: 100%; height: 100%; object-fit: contain;">
+        <img src="https://i.ibb.co/zVJmCGN7/Chat-GPT-Image-20-2025-15-42-39.png" alt="Up">
       </button>
-      <div style="display:flex; gap:10px; margin-top: 5px; margin-bottom: 5px;">
+
+      <!-- LEFT + RIGHT -->
+      <div style="display:flex; gap:10px;">
         <button id="left" class="arrow-btn">
-          <img src="https://i.ibb.co/rGrwT8Vg/Chat-GPT-Image-20-2025-15-50-24.png"
-               alt="left"
-               style="width: 100%; height: 100%; object-fit: contain;">
+          <img src="https://i.ibb.co/rGrwT8Vg/Chat-GPT-Image-20-2025-15-50-24.png" alt="Left">
         </button>
+
         <button id="right" class="arrow-btn">
-          <img src="https://i.ibb.co/Q7HvmJZ9/Chat-GPT-Image-20-2025-15-45-58.png"
-               alt="right"
-               style="width: 100%; height: 100%; object-fit: contain;">
+          <img src="https://i.ibb.co/Q7HvmJZ9/Chat-GPT-Image-20-2025-15-45-58.png" alt="Right">
         </button>
       </div>
+
+      <!-- DOWN -->
       <button id="down" class="arrow-btn">
-        <img src="https://i.ibb.co/gMvNCdTk/Chat-GPT-Image-20-2025-15-44-21.png"
-             alt="down"
-             style="width: 100%; height: 100%; object-fit: contain;">
+        <img src="https://i.ibb.co/gMvNCdTk/Chat-GPT-Image-20-2025-15-44-21.png" alt="Down">
       </button>
     </div>
   </div>
 
-  <!-- Победа -->
   <div id="win-modal" class="modal">
     <div class="modal-content">
       <h2>🎉 You Escaped!</h2>
-      <p><strong>⭐ Perfect route!</strong></p>
       <p>Total moves: <span id="final-moves">0</span></p>
-      <button id="close-modal" class="btn" style="margin-top: 12px;">Play Again</button>
+      <button id="close-modal" class="btn">Play Again</button>
     </div>
   </div>
 
-  <!-- КВИЗ -->
   <div id="quiz-modal" class="modal">
     <div class="modal-content">
       <h2>🔤 Grammar Check!</h2>
-      <p id="quiz-question" style="font-size: 1.2rem; margin: 16px 0; min-height: 2em;"></p>
-      <div id="quiz-options" style="display: flex; flex-direction: column; gap: 8px; margin: 12px 0;"></div>
-      <p id="quiz-feedback" style="color: #d32f2f; font-weight: bold; min-height: 1.4em;"></p>
+      <p id="quiz-question" style="font-size:1.2rem;"></p>
+      <div id="quiz-options" style="display:flex; flex-direction:column; gap:8px;"></div>
+      <p id="quiz-feedback" style="font-weight:bold;"></p>
     </div>
   </div>
 
@@ -312,96 +216,84 @@
     const GOAL_COLOR = '#10b981';
     const KEY_COLOR = '#fbbf24';
 
+    // Картинки
     const playerImg = new Image();
-    playerImg.src = 'https://i.ibb.co/tp4n66N4/hero-png.png';
-
     const keyImg1 = new Image();
-    keyImg1.src = 'https://i.ibb.co/nNWShMyS/food2-png.png';
-
     const keyImg2 = new Image();
-    keyImg2.src = 'https://i.ibb.co/C3CcTYFP/food1-png.png';
-
     const goalImg = new Image();
-    goalImg.src = 'https://i.ibb.co/3JCnKQ2/Chat-GPT-Image-20-2025-15-59-48.png';
-	
-	// ✅ Перерисовываем лабиринт, когда картинки прогрузились
-let imagesToLoad = 4;
-let imagesLoaded = 0;
 
-[playerImg, keyImg1, keyImg2, goalImg].forEach(img => {
-  img.onload = () => {
-    imagesLoaded++;
-    // когда все 4 картинки загрузились и лабиринт уже создан — перерисовать
-    if (imagesLoaded === imagesToLoad && maze.length > 0 && ctx && canvas) {
-      render();
-    }
-  };
-});
+    playerImg.src = 'https://i.ibb.co/tp4n66N4/hero-png.png';
+    keyImg1.src   = 'https://i.ibb.co/nNWShMyS/food2-png.png';
+    keyImg2.src   = 'https://i.ibb.co/C3CcTYFP/food1-png.png';
+    goalImg.src   = 'https://i.ibb.co/3JCnKQ2/Chat-GPT-Image-20-2025-15-59-48.png';
 
-   const quizQuestions = [
-  ["She walks to school every day.","Present Continuous","Future Simple","Present Simple","Past Simple",3],
+    let imagesLoaded = 0;
+    const allImages = [playerImg, keyImg1, keyImg2, goalImg];
 
-  ["He is reading a book.","Future Simple","Present Continuous","Past Simple","Present Simple",2],   // ✔ now removed
+    allImages.forEach(img => {
+      img.addEventListener('load', () => {
+        imagesLoaded++;
+        if (imagesLoaded === allImages.length && typeof canvas !== 'undefined' && canvas && ctx && maze.length > 0) {
+          render();
+        }
+      });
+    });
 
-  ["They played football yesterday.","Present Simple","Past Simple","Future Simple","Present Continuous",2],
-  ["We will travel to London next year.","Past Simple","Present Continuous","Future Simple","Present Simple",3],
-  ["I am cooking dinner at the moment.","Present Continuous","Past Simple","Future Simple","Present Simple",1],
-  ["Tom watches TV every evening.","Future Simple","Present Simple","Present Continuous","Past Simple",2],
-  ["She visited her grandma last week.","Present Continuous","Future Simple","Past Simple","Present Simple",3],
-  ["They will start the game soon.","Present Continuous","Future Simple","Present Simple","Past Simple",2],
-  ["I am writing a message right now.","Past Simple","Present Continuous","Future Simple","Present Simple",2],
+    const quizQuestions = [
+      ["She walks to school every day.","Present Continuous","Future Simple","Present Simple","Past Simple",3],
+      ["He is reading a book.","Future Simple","Present Continuous","Past Simple","Present Simple",2],
+      ["They played football yesterday.","Present Simple","Past Simple","Future Simple","Present Continuous",2],
+      ["We will travel to London next year.","Past Simple","Present Continuous","Future Simple","Present Simple",3],
+      ["I am cooking dinner at the moment.","Present Continuous","Past Simple","Future Simple","Present Simple",1],
+      ["Tom watches TV every evening.","Future Simple","Present Simple","Present Continuous","Past Simple",2],
+      ["She visited her grandma last week.","Present Continuous","Future Simple","Past Simple","Present Simple",3],
+      ["They will start the game soon.","Present Continuous","Future Simple","Present Simple","Past Simple",2],
+      ["I am writing a message right now.","Past Simple","Present Continuous","Future Simple","Present Simple",2],
 
-  ["He works in a bank.","Present Simple","Future Simple","Present Continuous","Past Simple",1],
-  ["We went to the museum yesterday.","Present Simple","Past Simple","Present Continuous","Future Simple",2],
-  ["She will call you tomorrow.","Past Simple","Future Simple","Present Simple","Present Continuous",2],
-  
-  ["They are playing with the dog.","Past Simple","Future Simple","Present Continuous","Present Simple",3],  // ✔ now removed
+      ["He works in a bank.","Present Simple","Future Simple","Present Continuous","Past Simple",1],
+      ["We went to the museum yesterday.","Present Simple","Past Simple","Present Continuous","Future Simple",2],
+      ["She will call you tomorrow.","Past Simple","Future Simple","Present Simple","Present Continuous",2],
+      ["They are playing with the dog.","Past Simple","Future Simple","Present Continuous","Present Simple",3],
+      ["He studies French at school.","Future Simple","Present Continuous","Present Simple","Past Simple",3],
+      ["I bought new shoes last month.","Past Simple","Present Continuous","Present Simple","Future Simple",1],
+      ["We will visit Paris in June.","Present Simple","Future Simple","Past Simple","Present Continuous",2],
+      ["She is drawing a picture right now.","Future Simple","Present Continuous","Past Simple","Present Simple",2],
+      ["They often go to the cinema.","Past Simple","Future Simple","Present Simple","Present Continuous",3],
+      ["He cleaned his room yesterday.","Present Continuous","Present Simple","Past Simple","Future Simple",3],
+      ["I will see you later.","Present Continuous","Future Simple","Past Simple","Present Simple",2],
 
-  ["He studies French at school.","Future Simple","Present Continuous","Present Simple","Past Simple",3],
-  ["I bought new shoes last month.","Past Simple","Present Continuous","Present Simple","Future Simple",1],
-  ["We will visit Paris in June.","Present Simple","Future Simple","Past Simple","Present Continuous",2],
-  ["She is drawing a picture right now.","Future Simple","Present Continuous","Past Simple","Present Simple",2],
-  ["They often go to the cinema.","Past Simple","Future Simple","Present Simple","Present Continuous",3],
-  ["He cleaned his room yesterday.","Present Continuous","Present Simple","Past Simple","Future Simple",3],
-  ["I will see you later.","Present Continuous","Future Simple","Past Simple","Present Simple",2],
+      ["She is running in the park.","Present Simple","Present Continuous","Future Simple","Past Simple",2],
+      ["They visited Spain last summer.","Future Simple","Past Simple","Present Simple","Present Continuous",2],
+      ["He meets his friends every weekend.","Present Simple","Present Continuous","Past Simple","Future Simple",1],
+      ["We are watching a movie at the moment.","Present Continuous","Future Simple","Present Simple","Past Simple",1],
+      ["I will finish the project tomorrow.","Future Simple","Past Simple","Present Continuous","Present Simple",1],
+      ["Tom cooked dinner yesterday.","Past Simple","Present Continuous","Present Simple","Future Simple",1],
+      ["She will join us later.","Present Continuous","Future Simple","Past Simple","Present Simple",2],
+      ["They are studying for the test now.","Future Simple","Past Simple","Present Continuous","Present Simple",3],
+      ["He drives to work every morning.","Present Continuous","Present Simple","Future Simple","Past Simple",2],
+      ["We watched a movie last night.","Past Simple","Present Continuous","Future Simple","Present Simple",1],
 
-  ["She is running in the park.","Present Simple","Present Continuous","Future Simple","Past Simple",2],     // ✔ now removed
+      ["The cat is sleeping.","Future Simple","Present Continuous","Present Simple","Past Simple",2],
+      ["They will buy a new car.","Present Continuous","Past Simple","Future Simple","Present Simple",3],
+      ["She reads books every weekend.","Future Simple","Present Simple","Present Continuous","Past Simple",2],
+      ["I am learning English now.","Present Continuous","Future Simple","Past Simple","Present Simple",1],
+      ["We traveled to Italy last year.","Present Simple","Past Simple","Future Simple","Present Continuous",2],
+      ["He will clean his room later.","Future Simple","Present Simple","Past Simple","Present Continuous",1],
+      ["They are having dinner right now.","Past Simple","Present Continuous","Present Simple","Future Simple",2],
+      ["She wrote a letter yesterday.","Present Continuous","Future Simple","Past Simple","Present Simple",3],
+      ["He will start a new job soon.","Present Simple","Past Simple","Future Simple","Present Continuous",3],
+      ["We are playing chess now.","Present Simple","Present Continuous","Past Simple","Future Simple",2],
 
-  ["They visited Spain last summer.","Future Simple","Past Simple","Present Simple","Present Continuous",2],
-  ["He meets his friends every weekend.","Present Simple","Present Continuous","Past Simple","Future Simple",1],
-  ["We are watching a movie at the moment.","Present Continuous","Future Simple","Present Simple","Past Simple",1],
-  ["I will finish the project tomorrow.","Future Simple","Past Simple","Present Continuous","Present Simple",1],
-  ["Tom cooked dinner yesterday.","Past Simple","Present Continuous","Present Simple","Future Simple",1],
-  ["She will join us later.","Present Continuous","Future Simple","Past Simple","Present Simple",2],
-  ["They are studying for the test now.","Future Simple","Past Simple","Present Continuous","Present Simple",3],
-  ["He drives to work every morning.","Present Continuous","Present Simple","Future Simple","Past Simple",2],
+      ["I walk to work every morning.","Past Simple","Present Simple","Present Continuous","Future Simple",2],
+      ["They cooked breakfast yesterday.","Future Simple","Present Continuous","Past Simple","Present Simple",3],
+      ["She is washing the dishes now.","Future Simple","Present Continuous","Past Simple","Present Simple",2],
+      ["We will fly to Spain next week.","Present Simple","Future Simple","Past Simple","Present Continuous",2],
+      ["He plays tennis every Saturday.","Present Continuous","Past Simple","Present Simple","Future Simple",3],
+      ["They were in the park yesterday.","Present Continuous","Future Simple","Past Simple","Present Simple",3],
+      ["I am reading a book right now.","Present Continuous","Present Simple","Future Simple","Past Simple",1],
+      ["She will bake a cake tomorrow.","Present Simple","Past Simple","Future Simple","Present Continuous",3]
+    ];
 
-  ["We watched a movie last night.","Past Simple","Present Continuous","Future Simple","Present Simple",1],
-
-  ["The cat is sleeping.","Future Simple","Present Continuous","Present Simple","Past Simple",2],  // ✔ now removed
-
-  ["They will buy a new car.","Present Continuous","Past Simple","Future Simple","Present Simple",3],
-  ["She reads books every weekend.","Future Simple","Present Simple","Present Continuous","Past Simple",2],
-  ["I am learning English now.","Present Continuous","Future Simple","Past Simple","Present Simple",1],
-  ["We traveled to Italy last year.","Present Simple","Past Simple","Future Simple","Present Continuous",2],
-  ["He will clean his room later.","Future Simple","Present Simple","Past Simple","Present Continuous",1],
-  ["They are having dinner right now.","Past Simple","Present Continuous","Present Simple","Future Simple",2],
-  ["She wrote a letter yesterday.","Present Continuous","Future Simple","Past Simple","Present Simple",3],
-  ["He will start a new job soon.","Present Simple","Past Simple","Future Simple","Present Continuous",3],
-  ["We are playing chess now.","Present Simple","Present Continuous","Past Simple","Future Simple",2],
-  
-  ["I walk to work every morning.","Past Simple","Present Simple","Present Continuous","Future Simple",2],
-  ["They cooked breakfast yesterday.","Future Simple","Present Continuous","Past Simple","Present Simple",3],
-  ["She is washing the dishes now.","Future Simple","Present Continuous","Past Simple","Present Simple",2],
-  ["We will fly to Spain next week.","Present Simple","Future Simple","Past Simple","Present Continuous",2],
-  ["He plays tennis every Saturday.","Present Continuous","Past Simple","Present Simple","Future Simple",3],
-  ["They were in the park yesterday.","Present Continuous","Future Simple","Past Simple","Present Simple",3],
-  ["I am reading a book right now.","Present Continuous","Present Simple","Future Simple","Past Simple",1],
-  ["She will bake a cake tomorrow.","Present Simple","Past Simple","Future Simple","Present Continuous",3]
-];
-
-
-    // === ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ===
     let maze = [];
     let originalKeys = [];
     let originalGoal = null;
@@ -413,29 +305,18 @@ let imagesLoaded = 0;
     let ctx, canvas;
     let cellSize;
 
-    // Для квиза
     let questionUsageCount = new Map();
     let isQuizActive = false;
-    let quizStage = 0; // 0 = неактивен, 1 = первый вопрос, 2 = второй
+    let quizStage = 0;
 
     document.addEventListener('DOMContentLoaded', () => {
       canvas = document.getElementById('mazeCanvas');
       ctx = canvas.getContext('2d');
       resizeCanvas();
       window.addEventListener('resize', resizeCanvas);
+
       generateNewMaze();
-      render();
-// ✅ Когда картинки подгрузятся — сразу перерисовать лабиринт,
-  // чтобы вместо кружков появились изображения еды/героя/выхода
-  [playerImg, keyImg1, keyImg2, goalImg].forEach(img => {
-    if (!img.complete || !img.naturalWidth) {
-      img.onload = () => {
-        if (maze.length > 0 && ctx && canvas) {
-          render();
-        }
-      };
-    }
-  });
+
       document.getElementById('new-maze').addEventListener('click', generateNewMaze);
       document.getElementById('replay').addEventListener('click', replay);
       document.getElementById('close-modal').addEventListener('click', () => {
@@ -443,13 +324,11 @@ let imagesLoaded = 0;
         replay();
       });
 
-      // Стрелки
       document.getElementById('up').addEventListener('click', () => movePlayer(0, -1));
       document.getElementById('down').addEventListener('click', () => movePlayer(0, 1));
       document.getElementById('left').addEventListener('click', () => movePlayer(-1, 0));
       document.getElementById('right').addEventListener('click', () => movePlayer(1, 0));
 
-      // Клавиатура
       document.addEventListener('keydown', (e) => {
         if (isQuizActive) return;
         switch (e.key) {
@@ -542,6 +421,8 @@ let imagesLoaded = 0;
       goal = originalGoal ? { x: originalGoal.x, y: originalGoal.y } : null;
       updateKeysUI();
       questionUsageCount = new Map();
+      isQuizActive = false;
+      quizStage = 0;
     }
 
     function getReachableCells(maze, sx, sy) {
@@ -556,7 +437,8 @@ let imagesLoaded = 0;
         result.push({x, y});
         for (const [dx, dy] of dirs) {
           const nx = x + dx, ny = y + dy;
-          if (nx >= 0 && nx < COLS && ny >= 0 && ny < ROWS && !visited[ny][nx] && maze[ny][nx] === PATH) {
+          if (nx >= 0 && nx < COLS && ny >= 0 && ny < ROWS &&
+              !visited[ny][nx] && maze[ny][nx] === PATH) {
             visited[ny][nx] = true;
             queue.push({x: nx, y: ny});
           }
@@ -651,21 +533,20 @@ let imagesLoaded = 0;
       }
     }
 
-    // ✅ ОСНОВНОЕ ИЗМЕНЕНИЕ: при сборе ключа — два вопроса подряд
     function movePlayer(dx, dy) {
       if (isQuizActive) return;
 
       const newX = player.x + dx;
       const newY = player.y + dy;
 
-      if (newX >= 0 && newX < COLS && newY >= 0 && newY < ROWS && maze[newY][newX] === PATH) {
+      if (newX >= 0 && newX < COLS && newY >= 0 && newY < ROWS &&
+          maze[newY][newX] === PATH) {
         player.x = newX;
         player.y = newY;
         moves++;
 
         let keyCollectedNow = false;
 
-        // Сбор ключей
         for (const key of keys) {
           if (!key.collected && key.x === player.x && key.y === player.y) {
             key.collected = true;
@@ -677,18 +558,15 @@ let imagesLoaded = 0;
           }
         }
 
-        // Победа
-        if (goal && collectedKeys === 6 && player.x === goal.x && player.y === goal.y) {
+        if (goal && collectedKeys === 6 &&
+            player.x === goal.x && player.y === goal.y) {
           showWinModal();
           return;
         }
 
-        // Обычный квиз каждые 10 ходов — НО только если сейчас не сбор ключа
         if (!keyCollectedNow && moves > 0 && moves % 10 === 0) {
-          showQuiz(1); // 1-й вопрос
-        } 
-        // Если собрали ключ — сразу 2 вопроса
-        else if (keyCollectedNow) {
+          showQuiz(1);
+        } else if (keyCollectedNow) {
           triggerDoubleQuiz();
         } else {
           render();
@@ -696,9 +574,8 @@ let imagesLoaded = 0;
       }
     }
 
-    // ✅ ДВА ВОПРОСА ПОДРЯД ПРИ СБОРЕ КЛЮЧА
     function triggerDoubleQuiz() {
-      quizStage = 1; // первый из двух
+      quizStage = 1;
       showQuiz(1);
     }
 
@@ -706,9 +583,7 @@ let imagesLoaded = 0;
       const availableIndices = [];
       for (let i = 0; i < quizQuestions.length; i++) {
         const used = questionUsageCount.get(i) || 0;
-        if (used < 2) {
-          availableIndices.push(i);
-        }
+        if (used < 2) availableIndices.push(i);
       }
 
       if (availableIndices.length === 0) {
@@ -722,13 +597,17 @@ let imagesLoaded = 0;
       questionUsageCount.set(randomIndex, currentCount + 1);
 
       const q = quizQuestions[randomIndex];
-      const correctIdx = q[4] - 1;
-      const answers = [q[1], q[2], q[3]];
+      const answers = q.slice(1, 5);
+      const correctIdx = q[5] - 1;
 
-      document.getElementById('quiz-question').textContent = q[0];
+      const questionEl = document.getElementById('quiz-question');
       const optionsContainer = document.getElementById('quiz-options');
+      const feedbackEl = document.getElementById('quiz-feedback');
+
+      questionEl.textContent = q[0];
       optionsContainer.innerHTML = '';
-      document.getElementById('quiz-feedback').textContent = '';
+      feedbackEl.textContent = '';
+      feedbackEl.style.color = '#0d3a23';
 
       answers.forEach((ans, idx) => {
         const btn = document.createElement('button');
@@ -736,18 +615,17 @@ let imagesLoaded = 0;
         btn.textContent = ans;
         btn.style.width = '100%';
         btn.style.padding = '10px';
+
         btn.onclick = () => {
           if (idx === correctIdx) {
-            document.getElementById('quiz-feedback').textContent = '✅ Correct!';
-            document.getElementById('quiz-feedback').style.color = '#10b981';
+            feedbackEl.textContent = '✅ Correct!';
+            feedbackEl.style.color = '#10b981';
 
             setTimeout(() => {
               if (quizStage === 1) {
-                // После 1-го — сразу второй
                 quizStage = 2;
                 showQuiz(2);
               } else {
-                // После 2-го — завершаем
                 quizStage = 0;
                 isQuizActive = false;
                 document.getElementById('quiz-modal').style.display = 'none';
@@ -755,10 +633,11 @@ let imagesLoaded = 0;
               }
             }, 600);
           } else {
-            document.getElementById('quiz-feedback').textContent = '❌ No, try again!';
-            document.getElementById('quiz-feedback').style.color = '#d32f2f';
+            feedbackEl.textContent = '❌ No, try again!';
+            feedbackEl.style.color = '#d32f2f';
           }
         };
+
         optionsContainer.appendChild(btn);
       });
 
